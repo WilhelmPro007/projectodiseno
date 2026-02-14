@@ -60,10 +60,11 @@ await app.listen(process.env.PORT ?? 3000);
 ```
 
 ## 6. Sincronización de Base de Datos
-Se utilizó `db push` para crear la base de datos y sincronizar el esquema:
+Se utilizaron migraciones para crear la base de datos y sincronizar el esquema:
 ```bash
-npx prisma db push
+npx prisma migrate dev --name init
 ```
+Esto crea una carpeta `prisma/migrations` con el historial de cambios.
 
 ## 7. Ejecución del Proyecto
 Se inició el servidor de desarrollo de NestJS:
