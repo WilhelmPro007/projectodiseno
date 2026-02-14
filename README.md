@@ -1,98 +1,80 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Guía Didáctica N° 1: Explorando Ecosistema NestJS
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este documento detalla los pasos seguidos para la creación y configuración del primer proyecto utilizando NestJS y Prisma con SQLite, siguiendo la Guía Didáctica N° 1.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 1. Verificación del Entorno
+Se verificó la instalación de Node.js y npm en el sistema.
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
+## 2. Creación del Proyecto NestJS
+Debido a problemas de permisos con la instalación global de `@nestjs/cli`, se utilizó `npx` para crear el proyecto en el directorio actual:
 ```bash
-$ npm install
+npx -y @nestjs/cli new . --package-manager npm
 ```
 
-## Compile and run the project
-
+## 3. Instalación de Dependencias de Base de Datos
+Se instalaron Prisma y `dotenv` como dependencias de desarrollo:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install prisma -D
+npm install dotenv -D
 ```
 
-## Run tests
-
+## 4. Inicialización de Prisma
+Se inicializó el recurso de configuración de Prisma:
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npx prisma init
 ```
 
-## Deployment
+## 5. Configuración de SQLite (Prisma 7)
+Dado que estamos utilizando **Prisma 7.4.0**, se realizaron ajustes específicos para el cumplimiento de los nuevos estándares:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### `prisma/schema.prisma`
+Se configuró el proveedor como `sqlite` y se definió un modelo inicial (`User`). Nota: En Prisma 7, el campo `url` ya no se incluye en el `datasource` del esquema.
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+datasource db {
+  provider = "sqlite"
+}
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### `.env`
+Se configuró la ruta del archivo de base de datos SQLite:
+```env
+DATABASE_URL="file:./dev.db"
+```
 
-## Resources
+### `src/main.ts`
+Se habilitó la carga de variables de entorno al inicio del archivo:
+```typescript
+import 'dotenv/config';
+// ... rest of the file
+await app.listen(process.env.PORT ?? 3000);
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## 6. Sincronización de Base de Datos
+Se utilizó `db push` para crear la base de datos y sincronizar el esquema:
+```bash
+npx prisma db push
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 7. Ejecución del Proyecto
+Se inició el servidor de desarrollo de NestJS:
+```bash
+npm run start:dev
+```
+La aplicación es accesible en el puerto configurado en el `.env` (ej: [http://localhost:3001](http://localhost:3001)).
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 8. Herramientas de Gestión
+Para visualizar la base de datos:
+```bash
+npx prisma studio
+```
