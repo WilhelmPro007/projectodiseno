@@ -3,19 +3,23 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-    const admin = await prisma.role.upsert({
-        where: { name: 'Admin' },
-        update: {},
-        create: { name: 'Admin' },
-    });
+    const roles = [
+        { name: 'Admin' },
+        { name: 'User' },
+    ];
 
-    const user = await prisma.role.upsert({
-        where: { name: 'User' },
-        update: {},
-        create: { name: 'User' },
-    });
+    console.log('Seeding roles...');
 
-    console.log({ admin, user });
+    for (const role of roles) {
+        const upsertedRole = await prisma.role.upsert({
+            where: { name: role.name },
+            update: {},
+            create: { name: role.name },
+        });
+        console.log(`- Role ${upsertedRole.name} (ID: ${upsertedRole.id})`);
+    }
+
+    console.log('Seed execution finished successfully.');
 }
 
 main()
