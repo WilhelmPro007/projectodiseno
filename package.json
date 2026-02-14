@@ -20,7 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:studio": "prisma studio",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "db:docker:postgresql": "bash scripts/docker-postgres.sh"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",
