@@ -26,8 +26,9 @@ async function bootstrap() {
   const config = new DocumentBuilder()
 
     .setTitle('API Diseño de Sistemas')
-    .setDescription('CRUD de Usuarios para Guía 2')
+    .setDescription('CRUD de Usuarios para Guía 2/3')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

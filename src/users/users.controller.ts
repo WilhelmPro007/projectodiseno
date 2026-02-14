@@ -1,12 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags, ApiOperation, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiCreatedResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
+
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
@@ -18,12 +20,15 @@ export class UsersController {
     }
 
     @Get()
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Obtener todos los usuarios' })
     @ApiOkResponse({ type: UserEntity, isArray: true })
     async findAll() {
         const users = await this.usersService.findAll();
         return users.map((user) => new UserEntity(user));
     }
+
 
     @Get(':id')
     @ApiOperation({ summary: 'Obtener un usuario por ID' })
