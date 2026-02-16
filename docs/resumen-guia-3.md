@@ -4,32 +4,86 @@ Este documento detalla la implementación del sistema de autenticación basado e
 
 ## Puntos Clave de la Implementación
 
-1.  **Módulo de Autenticación (`AuthModule`)**: Se creó un módulo dedicado para centralizar la lógica de seguridad, integrando `PassportModule` y `JwtModule`.
-2.  **Estrategia JWT (`JwtStrategy`)**: Se implementó una estrategia personalizada que extiende `PassportStrategy`. Esta estrategia se encarga de:
-    *   Extraer el token del encabezado `Authorization`.
-    *   Validar la firma del token usando una clave secreta.
-    *   Verificar si el usuario asociado al token existe en la base de datos.
-3.  **Guardia de Seguridad (`JwtAuthGuard`)**: Se implementó una guardia global basada en Passport para proteger rutas específicas, devolviendo un error 401 (Unauthorized) si el token no es válido o no está presente.
-4.  **Flujos de Auth**:
-    *   **Login**: Valida credenciales contra la base de datos (Prisma) y genera un token firmado.
-    *   **Registro**: Crea un nuevo usuario y devuelve automáticamente su token de acceso.
-5.  **Integración con Swagger**: Se configuró la seguridad de portador (Bearer Auth) en Swagger, permitiendo a los desarrolladores probar endpoints protegidos directamente desde la interfaz.
+### 1. Módulo de Autenticación (`AuthModule`)
+Centraliza la lógica de seguridad integrando `Passport` y `JwtModule`.
 
-## Funcionamiento de la Estrategia JWT
+#### Archivo: `src/auth/auth.module.ts`
+```typescript
+@Module({
+  imports: [
+    PassportModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1d' },
+    }),
+  ],
+  providers: [AuthService, JwtStrategy],
+  controllers: [AuthController],
+})
+export class AuthModule { }
+```
 
-El funcionamiento se basa en el siguiente ciclo de vida:
+### 2. Estrategia JWT y Validación
+Se implementó una estrategia para extraer y validar el token de los encabezados de las peticiones.
 
-1.  **Petición**: El cliente envía una petición con el encabezado `Authorization: Bearer <token>`.
-2.  **Extracción**: Passport-JWT extrae el token automáticamente.
-3.  **Validación**: NestJS verifica que el token no haya expirado y que la firma coincida con la `JWT_SECRET` del servidor.
-4.  **Payload**: Una vez validado, el método `validate()` de nuestra estrategia recibe el contenido decodificado del token.
-5.  **Inyección**: El objeto de usuario (o sus datos clave como el ID) se inyecta en el objeto `request`, permitiendo que los controladores accedan a `req.user`.
+#### Archivo: `src/auth/strategies/jwt.strategy.ts`
+```typescript
+export class JwtStrategy extends PassportStrategy(Strategy) {
+    async validate(payload: any) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: payload.sub },
+        });
+
+        if (!user) throw new UnauthorizedException();
+
+        return { id: user.id, email: user.email, role: payload.role };
+    }
+}
+```
+
+### 3. Guardia de Seguridad (`JwtAuthGuard`)
+Protege las rutas para que solo usuarios autenticados puedan acceder.
+
+#### Archivo: `src/auth/guards/jwt-auth.guard.ts`
+```typescript
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') { }
+```
+
+### 4. Lógica de Autenticación y Generación de Token
+El servicio valida las credenciales y genera el payload firmado.
+
+#### Archivo: `src/auth/auth.service.ts` (Login)
+```typescript
+async login(loginDto: LoginDto) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || user.password !== password) throw new UnauthorizedException();
+
+    const payload = { sub: user.id, email: user.email, role: user.role.name };
+    return {
+        access_token: this.jwtService.sign(payload),
+        user: new UserEntity(user),
+    };
+}
+```
+
+## Integración con Swagger
+Para probar los endpoints protegidos, se habilitó el botón **Authorize** en Swagger.
+
+#### Archivo: `src/main.ts`
+```typescript
+const config = new DocumentBuilder()
+  // ...
+  .addBearerAuth()
+  .build();
+```
 
 ## Configuración de Entorno
-
-Se han añadido las siguientes variables al archivo `.env` para facilitar la gestión del servicio:
-*   `JWT_SECRET`: Llave privada para firmar tokens.
-*   `JWT_EXPIRATION`: Tiempo de vida del token (ej. `1d`, `12h`).
+Variables críticas añadidas al `.env`:
+```env
+JWT_SECRET="mi_llave_secreta_pro"
+JWT_EXPIRATION="24h"
+```
 
 ---
 *Este módulo completa la tríada de guías iniciales, dotando al sistema de una capa de seguridad profesional y escalable.*

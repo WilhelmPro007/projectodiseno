@@ -4,6 +4,16 @@ Este repositorio contiene el desarrollo del proyecto de Diseño de Sistemas, org
 
 ---
 
+## 📋 Prerrequisitos
+
+Antes de comenzar, asegúrate de tener instalado:
+
+- **Node.js**: (Recomendado v20+)
+- **NPM**: (Empaquetador de dependencias)
+- **Docker**: (Opcional, solo si deseas usar PostgreSQL)
+
+---
+
 ## 🛠️ Tecnologías y Dependencias
 
 El proyecto utiliza un stack moderno y profesional para garantizar escalabilidad y tipado fuerte:
@@ -42,19 +52,37 @@ Consulta la [**Documentación de Base de Datos**](./docs/DATABASE.md) para detal
 
 ## 🚀 Inicio Rápido
 
-### Instalación
+### 1. Instalación
 ```bash
 npm install
-npx prisma generate
 ```
 
-### Ejecución
+### 2. Configuración de Entorno
+Copia el archivo de ejemplo y ajusta las variables según tu necesidad:
 ```bash
-# Sincronizar esquema y seed (primera vez)
-npx prisma db push
-npm run seed
+cp .env.example .env
+```
+> [!NOTE]
+> Por defecto, el proyecto está configurado para usar **SQLite**. Si deseas usar **PostgreSQL**, cambia `DB_TYPE` a `postgresql` en tu `.env`.
+> 
+> **Nota para SQLite**: El archivo `dev.db` ya viene incluido en el repositorio con datos iniciales para facilitar tus pruebas rápidas.
 
-# Iniciar servidor
+### 3. Preparación de Base de Datos
+```bash
+# Sincronizar esquema y generar cliente Prisma
+npx prisma generate
+npx prisma db push
+
+# (Opcional) Si usas PostgreSQL con Docker
+npm run db:docker:postgresql
+
+# Poblar con datos de prueba
+npm run seed
+```
+
+### 4. Ejecución
+```bash
+# Iniciar servidor en modo desarrollo
 npm run start:dev
 ```
 
