@@ -49,6 +49,21 @@ DATABASE_USERNAME=user
 DATABASE_PASSWORD=password
 DATABASE_SSL=true
 ```
+ 
+## 4.1 primera ejecucion
+```bash
+fnm use 22 
+```
+
+```bash
+cd cms
+```
+
+```bash
+npm run dev
+```
+(me encontre un bug donde la primera vez que entras y creas tu usuario admin, se congela en el survey, para solucionarlo, debes cerrar el servidor y volver a ejecutarlo)
+
 
 ## 5. Modelado de Datos: Recurso "Estudiante"
 Se definió la estructura de la colección para gestionar estudiantes:
@@ -80,5 +95,10 @@ Se definió la estructura de la colección para gestionar estudiantes:
 **strapi running:**
 ![strapi running](assets/guia4/strapirunning.png)
 
+**strapi creating user:**
+![strapi running](assets/guia4/strapicreateuser.png)
+
+**strapi consult user:**
+![strapi running](assets/guia4/strapiconsultuser.png)
 ---
 *Este avance marca el inicio de la gestión de contenido desacoplada y el uso de bases de datos relacionales en la nube.*
