@@ -1,6 +1,9 @@
 # compiled output
 /dist
 /node_modules
+/cms/dist
+/cms/node_modules
+/cms/build
 /build
 
 # Logs
