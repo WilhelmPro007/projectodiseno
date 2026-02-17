@@ -8,9 +8,45 @@ Este repositorio contiene el desarrollo del proyecto de Diseño de Sistemas, org
 
 Antes de comenzar, asegúrate de tener instalado:
 
-- **Node.js**: (Recomendado v20+)
+- **Node.js**: (Ver [Gestión de Versiones](#-gestión-de-versiones-nodejs))
 - **NPM**: (Empaquetador de dependencias)
 - **Docker**: (Opcional, solo si deseas usar PostgreSQL)
+
+---
+
+## 🟢 Gestión de Versiones Node.js
+
+Este proyecto requiere diferentes versiones de Node.js según el componente que estés trabajando. Recomendamos usar [**fnm** (Fast Node Manager)](https://github.com/Schniz/fnm) para cambiar fácilmente entre ellas.
+
+### Versiones Requeridas
+
+| Componente | Carpeta | Versión de Node.js | Razón |
+| :--- | :--- | :--- | :--- |
+| **Backend (NestJS)** | Raíz (`/`) | **v25.x** | Compatibilidad con `better-sqlite3` native modules. |
+| **CMS (Strapi)** | `cms/` | **v22.x** (LTS) | Compatibilidad oficial de Strapi v5. |
+
+### Cómo cambiar de versión con `fnm`
+
+Si no tienes instalada la versión necesaria:
+```bash
+fnm install 25
+fnm install 22
+```
+
+Para activar la versión antes de correr los comandos de cada proyecto:
+
+**Para el Backend (Root):**
+```bash
+fnm use 25
+npm run start:dev
+```
+
+**Para el CMS (Strapi):**
+```bash
+cd cms
+fnm use 22
+npm run develop
+```
 
 ---
 
