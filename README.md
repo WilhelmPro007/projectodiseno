@@ -33,6 +33,7 @@ El proyecto utiliza un stack moderno y profesional para garantizar escalabilidad
 | **Guía 1** | Configuración Inicial de NestJS | [Resumen Guía 1](./docs/resumen-guia-1.md) |
 | **Guía 2** | CRUD Profesional con Prisma & Swagger | [Resumen Guía 2](./docs/resumen-guia-2.md) |
 | **Guía 3** | Autenticación JWT & Passport | [Resumen Guía 3](./docs/resumen-guia-3.md) |
+| **Guía 4** | CMS Headless con Strapi & Render | [Resumen Guía 4](./docs/resumen-guia-4.md) |
 
 ---
 
