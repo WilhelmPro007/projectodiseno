@@ -94,6 +94,9 @@ Consulta la [**Documentación de Base de Datos**](./docs/DATABASE.md) para detal
 npm install
 ```
 
+> [!IMPORTANT]
+> **Generar Cliente Prisma**: Es obligatorio ejecutar `npx prisma generate` después de instalar las dependencias para que el editor y NestJS reconozcan los tipos de la base de datos.
+
 ### 2. Configuración de Entorno
 Copia el archivo de ejemplo y ajusta las variables según tu necesidad:
 ```bash
